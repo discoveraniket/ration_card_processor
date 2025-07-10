@@ -1,22 +1,24 @@
 # ocr.py
 
 import google.generativeai as genai, json
+
 # import time
 from PIL import Image
-from app.config import CONFIG # Updated import
-from app.services.image_manager import ImageManager # Updated import
+from app.config import CONFIG  # Updated import
+from app.services.image_manager import ImageManager  # Updated import
 
 CONFIG.validate()
+
 
 def perform_ocr(image_path, prompt, model):
     """Sends an image to Gemini Pro Vision for OCR and returns the text."""
     try:
         # Get image bytes via ImageManager
         image_data = ImageManager.image_to_bytes(image_path)
-        
+
         if isinstance(image_data, dict):
             return image_data  # Return error dict directly
-        
+
         image_part = {"mime_type": "image/png", "data": image_data}
         response = model.generate_content([prompt, image_part])
         response.resolve()
@@ -24,11 +26,12 @@ def perform_ocr(image_path, prompt, model):
     except Exception as e:
         return {"ERROR": f"OCR processing error: {str(e)}"}
 
+
 def main(image_path, model_key: int = 2):
     try:
         if model_key >= len(CONFIG.MODEL_LIST):
             return {"ERROR": "Invalid model index specified"}
-                          
+
         genai.configure(api_key=CONFIG.API_KEY)
         model = genai.GenerativeModel(CONFIG.MODEL_LIST[model_key])
 
@@ -37,7 +40,7 @@ def main(image_path, model_key: int = 2):
             if "ERROR" in ocr_output:
                 return {"ERROR": ocr_output["ERROR"]}
             if "error" in ocr_output:
-                return {"ERROR": ocr_output["error"]}       
+                return {"ERROR": ocr_output["error"]}
 
         data = ocr_output.text
         clean_data = data.replace("```json", "").replace("```", "").strip()
@@ -47,6 +50,7 @@ def main(image_path, model_key: int = 2):
         return {"ERROR": "Invalid JSON response from API"}
     except Exception as e:
         return {"ERROR": f"OCR failed: {str(e)}"}
+
 
 # Test the function with a sample image path
 def main1(image_path):
@@ -73,6 +77,7 @@ def main1(image_path):
     ocr_data = json.loads(clean_data)
     # time.sleep(15)
     return ocr_data
+
 
 # result = main(r"c:\image")
 # print(result)

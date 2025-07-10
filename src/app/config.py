@@ -4,6 +4,7 @@ Application configuration settings.
 """
 import os
 
+
 class Config:
     # Data Configuration
     DATA_REQUIRED_COLS = [
@@ -12,7 +13,7 @@ class Config:
         "Name of Card Holder",
         "Guardian's Name",
         "Head of Family",
-        "Village"
+        "Village",
     ]
     DATA_FILE_NAME = "data.xlsx"
 
@@ -23,7 +24,7 @@ class Config:
         "Name of Card Holder:": "Name of Card Holder",
         "Guardian's Name:": "Guardian's Name",
         "Head of Family:": "Head of Family",
-        "Village:": "Village"
+        "Village:": "Village",
     }
 
     # OCR Configuration
@@ -32,14 +33,14 @@ class Config:
         "name_of_card_holder": "Name of Card Holder:",
         "guardian_name": "Guardian's Name:",
         "head_of_family": "Head of Family:",
-        "address": "Village:"
+        "address": "Village:",
     }
 
     API_KEY = os.getenv("GEMINI_API_KEY")
     MODEL_LIST = [
         "gemini-2.5-pro-exp-03-25",
         "gemini-1.5-flash-8b-exp-0924",
-        "gemini-2.0-flash"
+        "gemini-2.0-flash",
     ]
 
     @classmethod
@@ -91,7 +92,7 @@ class Config:
         // Rest of the fields follow the same format
         }
         """
-    
+
     PROMPT2 = """
         Perform OCR on the ration card document image and return EXCLUSIVELY 
         these 5 fields and their bounding box coordinates with strict JSON keys:
@@ -137,6 +138,7 @@ class Config:
         // Rest of the fields follow the same format
         }
         """
+
 
 # Instantiate for easy access
 CONFIG = Config()

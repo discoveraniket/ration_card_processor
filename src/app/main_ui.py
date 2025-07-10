@@ -8,15 +8,18 @@ from app.components.data_form import DataForm
 from app.components.status_bar import StatusBar
 from app.services.image_manager import ImageManager
 from app.services.data_manager import DataManager
-from app.services.ocr import main as ocr_main # Renamed to avoid conflict with method name
+from app.services.ocr import (
+    main as ocr_main,
+)  # Renamed to avoid conflict with method name
 from app.utils.system_utils import is_dark_mode_windows
 from app.config import CONFIG
+
 
 class MainUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Ration Card processor")
-        self.root.state('zoomed')
+        self.root.state("zoomed")
 
         # Set the application icon
         # Construct the path to the icon file relative to the 'src' directory
@@ -24,14 +27,13 @@ class MainUI:
         # And the icon is in src/assets/app_icon.ico
         current_dir = os.path.dirname(os.path.abspath(__file__))
         # Go up one level to 'app', then one more to 'src', then into 'assets'
-        icon_path = os.path.join(current_dir, '..', 'assets', 'app_icon.ico')
-        
+        icon_path = os.path.join(current_dir, "..", "assets", "app_icon.ico")
+
         # Check if the icon file exists before trying to set it
         if os.path.exists(icon_path):
             self.root.iconbitmap(icon_path)
         else:
             print(f"Warning: Icon file not found at {icon_path}")
-
 
         # Initialize managers
         self._setup_image_display()
@@ -88,14 +90,13 @@ class MainUI:
             "<Control-o>": self.browse,
             "<Control-Return>": self.ocr,
             "<Control-s>": self.update_data,
-            
             # Pan controls
             "<Shift-Left>": lambda e: self.image_manager.pan_image(20, 0),
             "<Shift-Right>": lambda e: self.image_manager.pan_image(-20, 0),
             "<Shift-Up>": lambda e: self.image_manager.pan_image(0, 20),
-            "<Shift-Down>": lambda e: self.image_manager.pan_image(0, -20)
+            "<Shift-Down>": lambda e: self.image_manager.pan_image(0, -20),
         }
-        
+
         for key, command in bindings.items():
             self.root.bind(key, lambda e, cmd=command: cmd())
 
@@ -129,25 +130,39 @@ class MainUI:
                 self.image_manager.image_files[self.image_manager.current_index]
             )
             self._populate_form_from_df()
-            self.status_bar.set_status(f"{status_msg}; {len(self.image_manager.image_files)} images tracked.")
+            self.status_bar.set_status(
+                f"{status_msg}; {len(self.image_manager.image_files)} images tracked."
+            )
         else:
             self.status_bar.set_status("No image files found in the selected folder.")
 
     def previous_image(self):
         if self.image_manager.image_files and self.image_manager.current_index > 0:
             self.image_manager.current_index -= 1
-            self.image_manager.load_image(self.image_manager.image_files[self.image_manager.current_index])
+            self.image_manager.load_image(
+                self.image_manager.image_files[self.image_manager.current_index]
+            )
             self._populate_form_from_df()
-            self.status_bar.set_status(f"Image {self.image_manager.current_index + 1} of {len(self.image_manager.image_files)}")
+            self.status_bar.set_status(
+                f"Image {self.image_manager.current_index + 1} of {len(self.image_manager.image_files)}"
+            )
         else:
             self.status_bar.set_status("Already at the first image.")
 
     def next_image(self):
-        if self.image_manager.image_files and self.image_manager.current_index < len(self.image_manager.image_files) - 1:
+        if (
+            self.image_manager.image_files
+            and self.image_manager.current_index
+            < len(self.image_manager.image_files) - 1
+        ):
             self.image_manager.current_index += 1
-            self.image_manager.load_image(self.image_manager.image_files[self.image_manager.current_index])
+            self.image_manager.load_image(
+                self.image_manager.image_files[self.image_manager.current_index]
+            )
             self._populate_form_from_df()
-            self.status_bar.set_status(f"Image {self.image_manager.current_index + 1} of {len(self.image_manager.image_files)}")
+            self.status_bar.set_status(
+                f"Image {self.image_manager.current_index + 1} of {len(self.image_manager.image_files)}"
+            )
         else:
             self.status_bar.set_status("Already at the last image.")
 
@@ -162,7 +177,7 @@ class MainUI:
         if self.ocr_thread and self.ocr_thread.is_alive():
             self.status_bar.set_status("Status: OCR already running!")
             return  # Early exit if thread is active
-        
+
         self.status_bar.show_progress()
 
         if self.image_manager.current_index == -1:
@@ -177,9 +192,7 @@ class MainUI:
         # Start OCR thread
         image_path = self.image_manager.image_files[self.image_manager.current_index]
         self.ocr_thread = threading.Thread(
-            target=self._run_ocr,
-            args=(image_path,),
-            daemon=True
+            target=self._run_ocr, args=(image_path,), daemon=True
         )
         self.ocr_thread.start()
 
@@ -216,19 +229,23 @@ class MainUI:
         try:
             # Rename the physical file
             os.rename(old_path, new_path)
-            
+
             # Update the image_files list and current path
             self.image_manager.image_files[self.image_manager.current_index] = new_path
-            
+
             # Update DataFrame references
             img_name = os.path.basename(old_path)
 
-            form_data = {label: entry.get() for label, entry in self.data_form.entries.items()}
-            update_values = self.data_manager.prepare_update_values(new_filename, form_data)
-            
+            form_data = {
+                label: entry.get() for label, entry in self.data_form.entries.items()
+            }
+            update_values = self.data_manager.prepare_update_values(
+                new_filename, form_data
+            )
+
             self.data_manager.update_record(img_name, update_values)
             self.data_manager.save()
-            
+
             # Update status and refresh form
             self.status_bar.set_status(f"Data updated")
             self._populate_form_from_df()
@@ -236,30 +253,33 @@ class MainUI:
         except Exception as e:
             self.status_bar.set_status(f"Error: {str(e)}")
 
-    def save_data(self):self.status_bar.set_status("Status: Save clicked")
-    def options(self): self.status_bar.set_status("Status: Options clicked")
-    
+    def save_data(self):
+        self.status_bar.set_status("Status: Save clicked")
+
+    def options(self):
+        self.status_bar.set_status("Status: Options clicked")
+
     def _run_ocr(self, image_path):
         try:
             # Call the ocr_main function from the ocr service
             ocr_data = ocr_main(image_path)
-            
+
             # Check for OCR module errors first
             if isinstance(ocr_data, dict) and "ERROR" in ocr_data:
-                self.ocr_queue.put(('error', ocr_data["ERROR"]))
+                self.ocr_queue.put(("error", ocr_data["ERROR"]))
             else:
                 img_name = os.path.basename(image_path)
                 self.data_manager.update_record_with_ocr(img_name, ocr_data)
-                self.ocr_queue.put(('success', ocr_data))
+                self.ocr_queue.put(("success", ocr_data))
         except Exception as e:
-            self.ocr_queue.put(('error', f"System error: {str(e)}"))
-    
+            self.ocr_queue.put(("error", f"System error: {str(e)}"))
+
     def _check_ocr_queue(self):
         try:
             result = self.ocr_queue.get_nowait()
             status, data = result
 
-            if status == 'success':
+            if status == "success":
                 self._populate_form(data)
                 self.status_bar.set_status("Status: OCR completed")
             else:
@@ -273,7 +293,9 @@ class MainUI:
             self.status_bar.hide_progress()
 
         except queue.Empty:
-            if self.ocr_thread and self.ocr_thread.is_alive():  # Only keep checking if active
+            if (
+                self.ocr_thread and self.ocr_thread.is_alive()
+            ):  # Only keep checking if active
                 self.root.after(100, self._check_ocr_queue)
             else:
                 # Handle zombie threads
@@ -289,9 +311,8 @@ class MainUI:
         values = {k: v["value"] for k, v in ocr_data.items()}
         self.data_form.populate_from_ocr(values)
 
-
     def _populate_form_from_df(self):
-        if self.image_manager.current_index < 0 :
+        if self.image_manager.current_index < 0:
             return
         if self.data_manager.df is None:
             self.data_form.clear_form()
@@ -309,6 +330,7 @@ class MainUI:
             self.data_form.clear_form()
             return
         self.data_form.populate_from_dataframe(row, CONFIG.UI_FIELD_MAPPING)
+
 
 if __name__ == "__main__":
     theme_name = "darkly" if is_dark_mode_windows() else "flatly"

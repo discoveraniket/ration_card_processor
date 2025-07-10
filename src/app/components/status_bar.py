@@ -2,6 +2,7 @@
 import ttkbootstrap as tb
 from ttkbootstrap.constants import *
 
+
 class StatusBar:
     def __init__(self, parent):
         self.parent = parent
@@ -14,20 +15,18 @@ class StatusBar:
         """Initialize status bar components"""
         self.frame = tb.Frame(self.parent)
         self.frame.grid(row=3, column=0, sticky="ew", padx=10, pady=(0, 5))
-        
+
         # Status label
         self.label = tb.Label(self.frame, text="Status: Ready", anchor="w")
         self.label.grid(row=0, column=0, sticky="ew")
-        
+
         # Progress bar
         self.progress = tb.Progressbar(
-            self.frame, 
-            mode='indeterminate', 
-            bootstyle=(STRIPED, SUCCESS)
+            self.frame, mode="indeterminate", bootstyle=(STRIPED, SUCCESS)
         )
         self.progress.grid(row=0, column=1, sticky="e", padx=5)
         self.progress.grid_remove()
-        
+
         # Grid configuration
         self.frame.columnconfigure(0, weight=1)
         self.frame.columnconfigure(1, minsize=150)
@@ -45,7 +44,7 @@ class StatusBar:
         """Hide and stop progress animation"""
         self.progress.stop()
         self.progress.grid_remove()
-    
+
     def start_progress(self):
         self.progress.start()
 

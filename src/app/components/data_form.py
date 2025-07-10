@@ -3,7 +3,8 @@ import ttkbootstrap as tb, pandas as pd
 from ttkbootstrap.constants import *
 
 # Assuming config is imported from the app directory
-from app.config import CONFIG # Added import for CONFIG
+from app.config import CONFIG  # Added import for CONFIG
+
 
 class DataForm:
     def __init__(self, parent, config):
@@ -16,11 +17,7 @@ class DataForm:
 
     def _create_frame(self):
         """Create the container frame for the form"""
-        self.frame = tb.Labelframe(
-            self.parent, 
-            text="Card Details", 
-            padding=10
-        )
+        self.frame = tb.Labelframe(self.parent, text="Card Details", padding=10)
         self.frame.grid(row=2, column=0, sticky="ew", padx=10, pady=10)
 
     def _create_form(self):
@@ -30,7 +27,7 @@ class DataForm:
             ("Name of Card Holder:", 1, 0),
             ("Guardian's Name:", 0, 2),
             ("Head of Family:", 1, 2),
-            ("Village:", 0, 4)
+            ("Village:", 0, 4),
         ]
 
         for text, row, col in labels:
@@ -85,7 +82,7 @@ class DataForm:
                 entry.insert(0, str(val))
         if self.entry_order:
             self.entry_order[0].focus_set()
-    
+
     def clear_form(self):
         """Clear all form entries"""
         for entry in self.entries.values():

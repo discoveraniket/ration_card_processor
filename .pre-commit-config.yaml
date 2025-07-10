@@ -1,0 +1,8 @@
+# .pre-commit-config.yaml
+# See https://pre-commit.com for more information
+repos:
+-   repo: https://github.com/psf/black
+    rev: 24.4.2  # Use a specific, recent version of black
+    hooks:
+    -   id: black
+        language_version: python3 # Ensure it runs with a modern python

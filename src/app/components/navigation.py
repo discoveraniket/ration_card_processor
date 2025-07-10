@@ -2,6 +2,7 @@
 import ttkbootstrap as tb
 from ttkbootstrap.constants import *
 
+
 class NavigationToolbar:
     def __init__(self, parent, controller):
         self.parent = parent
@@ -36,11 +37,11 @@ class NavigationToolbar:
                 self.frame,
                 text=text,
                 command=lambda cmd=command: self._handle_command(cmd),
-                bootstyle=style
+                bootstyle=style,
             )
             btn.grid(row=0, column=col, padx=5, ipadx=10, sticky="ew")
             self.frame.columnconfigure(col, weight=1)
-            
+
             # Track special buttons
             if text in ["Previous", "Next"]:
                 self.nav_buttons.append(btn)
