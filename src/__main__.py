@@ -4,67 +4,72 @@ import ttkbootstrap as tb
 import os
 import threading
 import tkinter as tk
-from PIL import Image, ImageTk  # Import PIL for image handling
+from PIL import Image, ImageTk
 from app.utils.system_utils import is_dark_mode_windows
+from typing import Optional
 
 
-def create_splash_screen(root, icon_path):
+def create_splash_screen(root: tk.Tk, icon_path: str) -> tk.Toplevel:
     """
-    Creates and displays a splash screen window with the app icon and loading text.
+    Creates and displays a splash screen window with the app icon.
+
+    Args:
+        root (tk.Tk): The root Tkinter window of the main application.
+        icon_path (str): The file path to the application icon.
+
+    Returns:
+        tk.Toplevel: The created splash screen Toplevel window.
     """
-    splash = tk.Toplevel(root)
-    splash.title("Loading...")  # Set a title for the splash screen
-    splash.overrideredirect(True)  # Remove window decorations (title bar, buttons)
+    splash: tk.Toplevel = tk.Toplevel(root)
+    splash.title("Loading...")
+    splash.overrideredirect(True)
 
-    # Create a frame to hold the icon and text, allowing for horizontal layout
-    content_frame = tb.Frame(splash)
-    content_frame.pack(padx=20, pady=20)  # Padding for the overall content
+    content_frame: tb.Frame = tb.Frame(splash)
+    content_frame.pack(padx=20, pady=20)
 
-    # Load and display the icon on the splash screen
-    photo_image = None
+    photo_image: Optional[ImageTk.PhotoImage] = None
     if os.path.exists(icon_path):
         try:
-            pil_image = Image.open(icon_path)
-            # Increase icon size (e.g., 128x128 pixels)
+            pil_image: Image.Image = Image.open(icon_path)
             pil_image = pil_image.resize((128, 128), Image.Resampling.LANCZOS)
             photo_image = ImageTk.PhotoImage(pil_image)
 
-            icon_label = tb.Label(content_frame, image=photo_image)
-            icon_label.image = (
-                photo_image  # Keep a reference to prevent garbage collection
-            )
-            icon_label.pack(side="left", padx=10)  # Position icon to the left
+            icon_label: tb.Label = tb.Label(content_frame, image=photo_image)
+            icon_label.image = photo_image
+            icon_label.pack(side="left", padx=10)
         except Exception as e:
             print(f"Error loading splash screen icon: {e}")
             photo_image = None
     else:
         print(f"Warning: Icon file not found for splash screen at {icon_path}")
 
-    # Add a label for loading message (smaller font)
-    # label = tb.Label(content_frame, text="Loading Application...", font=("Helvetica", 10), bootstyle="primary")
-    # label.pack(side="left", padx=5) # Position text to the right of the icon
+    splash.update_idletasks()
 
-    # Center the splash screen on the actual screen
-    splash.update_idletasks()  # Update geometry to get correct width/height
-    # splash.update()
+    screen_width: int = root.winfo_screenwidth()
+    screen_height: int = root.winfo_screenheight()
 
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
-
-    x = (screen_width // 2) - (splash.winfo_width() // 2)
-    y = (screen_height // 2) - (splash.winfo_height() // 2)
+    x: int = (screen_width // 2) - (splash.winfo_width() // 2)
+    y: int = (screen_height // 2) - (splash.winfo_height() // 2)
     splash.geometry(f"+{x}+{y}")
 
-    # Make the splash screen always on top
     splash.attributes("-topmost", True)
 
     return splash
 
 
-def initialize_main_app(root_app, app_ready_event):
+def initialize_main_app(root_app: tk.Tk, app_ready_event: threading.Event) -> None:
     """
-    Initializes the main application UI in a separate thread.
-    Signals when the main UI is ready.
+    Initializes the main application UI components in a separate thread.
+
+    This function imports and instantiates the `MainUI` class, which is
+    responsible for building the main user interface. After the UI is
+    initialized, it sets a threading event to signal that the application
+    is ready to be displayed.
+
+    Args:
+        root_app (tk.Tk): The root Tkinter window for the main application.
+        app_ready_event (threading.Event): A threading event used to signal
+            when the main application UI has been fully initialized.
     """
     # Import MainUI here to delay its loading until after splash screen is up
     from app.main_ui import MainUI
@@ -77,57 +82,53 @@ def initialize_main_app(root_app, app_ready_event):
     app_ready_event.set()
 
 
-def main():
+def main() -> None:
     """
-    Main function to initialize and run the Ration Card Processor application,
-    with a splash screen.
+    Main function to initialize and run the Ration Card Processor application.
+
+    This function sets up the main application window, determines the theme
+    based on the system's dark mode setting, displays a splash screen,
+    and then initializes the main application UI in a separate thread.
+    It periodically checks for the readiness of the main application and
+    manages the visibility of the splash screen and main window accordingly.
     """
-    # Determine the theme based on system dark mode setting
-    theme_name = "darkly" if is_dark_mode_windows() else "flatly"
+    theme_name: str = "darkly" if is_dark_mode_windows() else "flatly"
 
-    # Create the main application window (initially hidden)
-    app = tb.Window(themename=theme_name)
-    app.withdraw()  # Hide the main window initially
+    app: tb.Window = tb.Window(themename=theme_name)
+    app.withdraw()
 
-    # Set the main application window icon (for taskbar)
-    # This should still be done on the main 'app' window for taskbar visibility
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    icon_path = os.path.join(current_dir, "assets", "app_icon.ico")
+    current_dir: str = os.path.dirname(os.path.abspath(__file__))
+    icon_path: str = os.path.join(current_dir, "assets", "app_icon.ico")
     if os.path.exists(icon_path):
         app.iconbitmap(icon_path)
     else:
         print(f"Warning: Main app icon file not found at {icon_path}")
 
-    # Create and display the splash screen
-    splash_screen = create_splash_screen(app, icon_path)
+    splash_screen: tk.Toplevel = create_splash_screen(app, icon_path)
 
-    # Event to signal when the main app is ready
-    app_ready_event = threading.Event()
+    app_ready_event: threading.Event = threading.Event()
 
-    # Start the main application initialization in a separate thread
-    app_thread = threading.Thread(
-        target=initialize_main_app,
-        args=(app, app_ready_event),
-        daemon=True,  # Daemon thread exits when main program exits
+    app_thread: threading.Thread = threading.Thread(
+        target=initialize_main_app, args=(app, app_ready_event), daemon=True
     )
     app_thread.start()
 
-    def check_app_ready():
+    def check_app_ready() -> None:
         """
-        Periodically checks if the main app is ready and manages the splash screen.
+        Periodically checks if the main application is ready.
+
+        If the `app_ready_event` is set, it destroys the splash screen and
+        shows the main application window. Otherwise, it schedules itself
+        to run again after a short delay.
         """
         if app_ready_event.is_set():
-            # Main app is ready, destroy splash screen and show main window
             splash_screen.destroy()
-            app.deiconify()  # Show the main window
+            app.deiconify()
         else:
-            # Main app not ready yet, check again after a short delay
-            app.after(100, check_app_ready)  # Check every 100ms
+            app.after(100, check_app_ready)
 
-    # Start checking for app readiness
     app.after(100, check_app_ready)
 
-    # Start the Tkinter event loop
     app.mainloop()
 
 
