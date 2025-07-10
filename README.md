@@ -1,6 +1,10 @@
 # Ration Card Processor
 
-The **Ration Card Processor** is a robust desktop application designed to streamline the process of extracting, managing, and visualizing data from ration card images. Built with Python and `ttkbootstrap` for a modern graphical user interface, it leverages Google's Gemini API for advanced Optical Character Recognition (OCR) to automatically pull key information from documents.
+The **Ration Card Processor** is a robust desktop application designed to streamline the process of extracting, managing, and visualizing data from ration card images. **Please note that this project is strictly designed for and tested on Windows operating systems.**
+
+This project was born out of a desire to alleviate the repetitive and labor-intensive task of manual data entry from thousands of ration card images into Excel sheets. Observing data entry operators engaged in this arduous process inspired the development of a system that significantly reduces manual effort, making the digitization of ration card information more efficient and less prone to human error.
+
+Built with Python and `ttkbootstrap` for a modern graphical user interface, it leverages Google's Gemini API for advanced Optical Character Recognition (OCR) to automatically pull key information from documents.
 
 This application is ideal for organizations or individuals who need to efficiently digitize and categorize information from a large volume of ration card images, providing capabilities for data verification, correction, and structured storage.
 
@@ -33,17 +37,17 @@ The project is built using:
   * **`json`**: For handling JSON data, especially bounding box information.
   * **`os`**: For file system operations.
   * **`threading`**: For handling background tasks like OCR to keep the UI responsive.
-  * **`winreg`**: Used for Windows-specific functionalities like dark mode detection.
+  * \*\*\*\*`winreg`**: Used for Windows-specific functionalities like dark mode detection and crucial for Windows OS compatibility.**
 
 ## Installation
 
-To set up and run the Ration Card Processor, follow these steps:
+To set up and run the Ration Card Processor **on Windows**, follow these steps:
 
 1.  **Clone the Repository (if applicable):**
 
     ```bash
-    git clone <repository_url_here>
-    cd <repository_directory>
+    git clone https://github.com/discoveraniket/ration_card_processor
+    cd ration_card_processor
     ```
 
     *(Note: Since this is a single project, you may just have the files directly.)*
@@ -54,16 +58,11 @@ To set up and run the Ration Card Processor, follow these steps:
     python -m venv venv
     ```
 
-3.  **Activate the Virtual Environment:**
+3.  **Activate the Virtual Environment (Windows Command Prompt/PowerShell):**
 
-      * **Windows:**
-        ```bash
-        .\venv\Scripts\activate
-        ```
-      * **macOS/Linux:**
-        ```bash
-        source venv/bin/activate
-        ```
+    ```bash
+    .\venv\Scripts\activate
+    ```
 
 4.  **Install Dependencies:**
 
@@ -83,11 +82,7 @@ To set up and run the Ration Card Processor, follow these steps:
             ```powershell
             $env:GEMINI_API_KEY="YOUR_API_KEY_HERE"
             ```
-          * **macOS/Linux:**
-            ```bash
-            export GEMINI_API_KEY="YOUR_API_KEY_HERE"
-            ```
-        *(For permanent setup, add this to your system's environment variables or shell profile.)*
+        *(For permanent setup, add this to your system's environment variables.)*
 
 ## Usage
 
@@ -129,29 +124,54 @@ To set up and run the Ration Card Processor, follow these steps:
 
 ```
 .
-├── __main__.py             # Application entry point, splash screen
-├── app/
-│   ├── components/
-│   │   ├── data_form.py    # UI component for data entry form
-│   │   ├── navigation.py   # UI component for navigation toolbar
-│   │   └── status_bar.py   # UI component for status display and progress
-│   ├── services/
-│   │   ├── data_manager.py # Handles data loading, saving, and updates (Excel, JSON)
-│   │   ├── image_manager.py# Manages image loading, display, manipulation (zoom, pan, rotate)
-│   │   └── ocr.py          # Integrates with Google Gemini API for OCR
-│   ├── utils/
-│   │   └── system_utils.py # Utility functions (e.g., Windows dark mode detection)
-│   ├── config.py           # Application-wide configuration settings (API keys, prompts, mappings)
-│   └── main_ui.py          # Main application UI logic and orchestrator
-└── assets/                 # Contains application assets like icons
-    └── app_icon.ico
+├── build.py                # PyInstaller build script
+├── LICENSE                 # Project license file
+├── README.md               # Project documentation
+├── requirements.txt        # Python dependencies
+└── src/
+    ├── __main__.py         # Application entry point
+    ├── app/
+    │   ├── __init__.py
+    │   ├── config.py       # Configuration settings
+    │   ├── main_ui.py      # Main application UI
+    │   ├── components/
+    │   │   ├── __init__.py
+    │   │   ├── data_form.py    # Data entry form component
+    │   │   ├── navigation.py   # Navigation toolbar component
+    │   │   └── status_bar.py   # Status bar component
+    │   ├── services/
+    │   │   ├── __init__.py
+    │   │   ├── data_manager.py # Data loading and saving
+    │   │   ├── image_manager.py# Image handling
+    │   │   └── ocr.py          # OCR service
+    │   └── utils/
+    │       ├── __init__.py
+    │       └── system_utils.py # System utility functions
+    └── assets/
+        ├── app_icon.ico    # Application icon
+        └── app_icon.png    # Application icon
 ```
+
+## Future Updates
+
+While the current version is functional, several exciting enhancements are planned:
+
+-   **Cross-Platform Support**: Refactor the application to be fully compatible with **Linux**, replacing Windows-specific code (like `winreg`) with cross-platform alternatives.
+-   **Implement UI Buttons**:
+    -   **Save Button**: Develop the "Save" functionality to persist all data changes without requiring a file rename.
+    -   **Options Button**: Implement the "Options" panel to manage application settings.
+-   **Batch OCR Processing**: Introduce a feature to run OCR on all images in a folder at once.
+-   **Bounding Box Visualization**: Use the saved `bbox_data.json` to draw boxes on the image, showing where the OCR extracted text from.
+-   **Advanced Data Validation**: Add more robust validation for data fields to improve accuracy.
+-   **Configuration & Settings**:
+    -   **In-App Theme Switching**: Allow users to toggle between light and dark modes from the Options panel.
+    -   **Customizable File Renaming**: Add an option to disable or configure the automatic renaming of image files.
 
 ## About the Developer
 
-This project was developed by Aniket Sarkar. Aniket possesses strong Python scripting and web automation skills (with Playwright and Selenium). He has experience building practical applications, including a automation app and an AI-powered Macbeth learning app prototype using the Gemini API. Aniket is open to collaboration and new opportunities that accelerate his income goals for long-term wealth creation.
+This project was created by **Aniket Sarkar**, a Python developer with expertise in scripting, automation, and AI integration. Aniket has hands-on experience building practical desktop and web applications, including commercial automation tools and an AI-powered Macbeth learning app prototype using the Gemini API. He is passionate about leveraging technology to solve real-world problems and is open to collaboration and new opportunities.
 
-  * **GitHub Profile**: [https://github.com/discoveraniket/macbeth-learning-app](https://github.com/discoveraniket/macbeth-learning-app)
+- **GitHub Profile:** [https://github.com/discoveraniket](https://github.com/discoveraniket)
 
 ## Contributing
 
