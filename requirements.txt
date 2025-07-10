@@ -1,0 +1,6 @@
+ttkbootstrap
+pandas
+openpyxl
+Pillow
+google-generativeai
+PyInstaller

@@ -37,6 +37,8 @@ The project is built using:
   * **`json`**: For handling JSON data, especially bounding box information.
   * **`os`**: For file system operations.
   * **`threading`**: For handling background tasks like OCR to keep the UI responsive.
+  * **`openpyxl`**: Used by pandas for reading and writing Excel files (`.xlsx`).
+  * **`PyInstaller`**: For packaging the Python application into a standalone executable.
   * \*\*\*\*`winreg`**: Used for Windows-specific functionalities like dark mode detection and crucial for Windows OS compatibility.**
 
 ## Installation
@@ -67,7 +69,7 @@ To set up and run the Ration Card Processor **on Windows**, follow these steps:
 4.  **Install Dependencies:**
 
     ```bash
-    pip install ttkbootstrap pandas Pillow google-generativeai
+    pip install -r requirements.txt
     ```
 
 5.  **Set up Google Gemini API Key:**
