@@ -3,11 +3,19 @@
 Application configuration settings.
 """
 import os
+from typing import List, Dict, Tuple, Optional
 
 
 class Config:
+    """
+    Configuration class for the Ration Card Processor application.
+
+    This class holds various settings related to data handling, UI, OCR,
+    API keys, and prompts for the Gemini model.
+    """
+
     # Data Configuration
-    DATA_REQUIRED_COLS = [
+    DATA_REQUIRED_COLS: List[str] = [
         "image_name",
         "Ration Card ID",
         "Name of Card Holder",
@@ -15,36 +23,53 @@ class Config:
         "Head of Family",
         "Village",
     ]
-    DATA_FILE_NAME = "data.xlsx"
+    """List of required column names for data processing."""
+
+    DATA_FILE_NAME: str = "data.xlsx"
+    """Name of the data file."""
 
     # UI Configuration
-    UI_IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".bmp", ".gif")
-    UI_FIELD_MAPPING = {
+    UI_IMAGE_EXTENSIONS: Tuple[str, ...] = (".jpg", ".jpeg", ".png", ".bmp", ".gif")
+    """Tuple of supported image file extensions for the UI."""
+
+    UI_FIELD_MAPPING: Dict[str, str] = {
         "Ration Card ID:": "Ration Card ID",
         "Name of Card Holder:": "Name of Card Holder",
         "Guardian's Name:": "Guardian's Name",
         "Head of Family:": "Head of Family",
         "Village:": "Village",
     }
+    """Mapping from UI display labels to internal data field names."""
 
     # OCR Configuration
-    OCR_FIELD_MAPPING = {
+    OCR_FIELD_MAPPING: Dict[str, str] = {
         "ration_card_id": "Ration Card ID:",
         "name_of_card_holder": "Name of Card Holder:",
         "guardian_name": "Guardian's Name:",
         "head_of_family": "Head of Family:",
         "address": "Village:",
     }
+    """Mapping from OCR output keys to UI display labels."""
 
-    API_KEY = os.getenv("GEMINI_API_KEY")
-    MODEL_LIST = [
+    API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
+    """API key for accessing the Gemini model, fetched from environment variables."""
+
+    MODEL_LIST: List[str] = [
         "gemini-2.5-pro-exp-03-25",
         "gemini-1.5-flash-8b-exp-0924",
         "gemini-2.0-flash",
     ]
+    """List of available Gemini models."""
 
     @classmethod
-    def validate(cls):
+    def validate(cls) -> None:
+        """
+        Validates that essential configuration variables are set.
+
+        Raises:
+            ValueError: If GEMINI_API_KEY is not set, MODEL_LIST is empty,
+                        or PROMPT2 is missing.
+        """
         if not cls.API_KEY:
             raise ValueError("GEMINI_API_KEY environment variable not set")
         if not cls.MODEL_LIST:
@@ -52,7 +77,7 @@ class Config:
         if not cls.PROMPT2:
             raise ValueError("OCR prompt configuration missing")
 
-    PROMPT1 = """
+    PROMPT1: str = """
         Perform OCR on the ration card document image and return EXCLUSIVELY these 4 fields with strict JSON keys:
 
         1. `ration_card_id`: 
@@ -92,8 +117,9 @@ class Config:
         // Rest of the fields follow the same format
         }
         """
+    """Prompt template for OCR extraction (version 1)."""
 
-    PROMPT2 = """
+    PROMPT2: str = """
         Perform OCR on the ration card document image and return EXCLUSIVELY 
         these 5 fields and their bounding box coordinates with strict JSON keys:
 
@@ -138,11 +164,18 @@ class Config:
         // Rest of the fields follow the same format
         }
         """
+    """Prompt template for OCR extraction (version 2)."""
 
 
 # Instantiate for easy access
-CONFIG = Config()
+CONFIG: Config = Config()
+"""An instance of the Config class for easy access to configuration settings."""
 
-VERSION = "1.0.0"
-APP_NAME = "RCP"
-EXE_NAME = APP_NAME
+VERSION: str = "1.0.0"
+"""Current version of the application."""
+
+APP_NAME: str = "RCP"
+"""Short name of the application."""
+
+EXE_NAME: str = APP_NAME
+"""Name of the executable file."""
