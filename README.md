@@ -149,7 +149,7 @@ To set up and run the Ration Card Processor, follow these steps:
 
 ## About the Developer
 
-This project was developed by Aniket Sarkar, a 35-year-old government employee from India with a passion for automation and AI. Aniket possesses strong Python scripting (7/10) and web automation skills (8/10 with Playwright and Selenium). He has experience building practical applications, including a side-income generating automation app and an AI-powered Macbeth learning app prototype using the Gemini API. Aniket is open to collaboration and new opportunities that accelerate his income goals for long-term wealth creation.
+This project was developed by Aniket Sarkar. Aniket possesses strong Python scripting and web automation skills (with Playwright and Selenium). He has experience building practical applications, including a automation app and an AI-powered Macbeth learning app prototype using the Gemini API. Aniket is open to collaboration and new opportunities that accelerate his income goals for long-term wealth creation.
 
   * **GitHub Profile**: [https://github.com/discoveraniket/macbeth-learning-app](https://github.com/discoveraniket/macbeth-learning-app)
 
