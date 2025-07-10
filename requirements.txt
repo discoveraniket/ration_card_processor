@@ -1,6 +1,6 @@
-ttkbootstrap
-pandas
-openpyxl
-Pillow
-google-generativeai
-PyInstaller
+ttkbootstrap==1.10.1
+pandas==2.2.2
+openpyxl==3.1.2
+Pillow==10.3.0
+google-generativeai==0.5.4
+PyInstaller==6.8.0
